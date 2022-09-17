@@ -7,7 +7,7 @@ tags: [meterpreter,local file inclusion,screen,vulnerable plugins,screen]
 
 # Backdoor
 
-![Backdoor](/assets/lib/img/backdoor/backdoor.png)
+![Backdoor](/assets/img/backdoor/backdoor.png)
 
 Backdoor is an easy machine from Hackthebox. We start from finding wordpress website then have a vulnerable plugins. The plugins is vulnerable to directory traversal and it allows local file inclusion. From this we can get the config file where it contents database credentials. Then with local file inclusion we can get a valid process that run gdbserver. Use metasploit to get reverse shell with meterpreter. From there we find a SUID binary where we can exploit and gain root.
 
@@ -53,7 +53,7 @@ Nmap done: 1 IP address (1 host up) scanned in 10.79 seconds
 
 Got port 22 and 80 in nmap scan. So we can proceed to enumerate http port. The web app is powered by wordpress.
 
-![Wp-admin page](/assets/lib/img/backdoor/Untitled.png)
+![Wp-admin page](/assets/img/backdoor/Untitled.png)
 
                                                       Wp-admin page
 
@@ -99,21 +99,21 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
 
 From the results we can see new directory. Then check the page of `/plugins`  and found new things.
 
-![Untitled](/assets/lib/img/backdoor/Untitled%201.png)
+![Untitled](/assets/img/backdoor/Untitled%201.png)
 
 ebook-download ?? so decided to google it and if i can find some exploit about the ebook.
 
 Found the exploit that maybe works for the box.
 
-![Untitled](/assets/lib/img/backdoor/Untitled%202.png)
+![Untitled](/assets/img/backdoor/Untitled%202.png)
 
 Just to confirm that the exploit can be use. Check the reaadme.txt and find the version of the ebook-download
 
-![Untitled](/assets/lib/img/backdoor/Untitled%203.png)
+![Untitled](/assets/img/backdoor/Untitled%203.png)
 
 The stable tag is 1.1 and it is indeed that is the exploit that can be use.  After we apply the lfi in exploit db we can get the wp-config.php
 
-![Untitled](/assets/lib/img/backdoor/Untitled%204.png)
+![Untitled](/assets/img/backdoor/Untitled%204.png)
 
 wp-config.php file is sensitive file for wordpress and it maybe contains some database credentials. Since wp-config.php is downloaded, the mysql credentials we can get it.
 
@@ -200,7 +200,7 @@ mysql:x:113:118:MySQL Server,,,:/nonexistent:/bin/false
 
 Try take user id_rsa but cannot take it and start googling about LFI.Found something useful in LFI vulnerability.
 
-![Untitled](/assets/lib/img/backdoor/Untitled%205.png)
+![Untitled](/assets/img/backdoor/Untitled%205.png)
 
  From the above image, `/proc/[PID]/cmdline` is kinda interesting since we have users but not the passwords. Need to fuzz the PID
 
@@ -247,11 +247,11 @@ root@Rav3nCLaW [10:48:30 PM] [~/Documents/htb/backdoor]
 
 Found the exploitdb and in metasploit. The exploitDB have the version of gdbserver but as for the metasploit it does not mention about the version so try the metasploit gdb exploit first.
 
-![Metasploit gdbserver exploit](/assets/lib/img/backdoor/Untitled%206.png)
+![Metasploit gdbserver exploit](/assets/img/backdoor/Untitled%206.png)
 
 Metasploit gdbserver exploit
 
-![Meterpreter shell](/assets/lib/img/backdoor/Untitled%207.png)
+![Meterpreter shell](/assets/img/backdoor/Untitled%207.png)
 
 Meterpreter shell
 
@@ -283,7 +283,7 @@ find / -perm -u=s -type f 2>/dev/null
 
 With linpeas we can the screen version. 
 
-![Untitled](/assets/lib/img/backdoor/Untitled%208.png)
+![Untitled](/assets/img/backdoor/Untitled%208.png)
 
 Since the screen file have SUID permission we can just attach to the root.
 
@@ -291,4 +291,4 @@ Since the screen file have SUID permission we can just attach to the root.
 screen -x root/root
 ```
 
-![Untitled](/assets/lib/img/backdoor/Untitled%209.png)
+![Untitled](/assets/img/backdoor/Untitled%209.png)

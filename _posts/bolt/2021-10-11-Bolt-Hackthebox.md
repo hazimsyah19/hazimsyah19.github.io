@@ -6,7 +6,7 @@ tags: [subdomain,crack,sqlite,SSTI,pgp]
 ---
 
 # Bolt
-![Bolt infor card](/assets/lib/img/bolt/bolt.png)
+![Bolt infor card](/assets/img/bolt/bolt.png)
 
 Bolt is a medium machine on Hackthebox. Start with an archive that we need to download and in the archive got credentials that we need to crack. Vhost is found and we can log in with the credentials that we crack before. The vhost is vulnerable to SSTI and from there we can craft our own SSTI payload to get reverse shell. From there with enumeration we found pgp private key block where it can crack. A message need is engrypted with pgp and then decrypt the message with gpg. From there we can get the root password and gain root.
 
@@ -46,7 +46,7 @@ Found the domain name of the IP and the subdomain of the IP. Add it inside /etc/
 
 Cannot register to the page since it return 500 internal error.
 
-![Untitled](/assets/lib/img/bolt/Untitled.png)
+![Untitled](/assets/img/bolt/Untitled.png)
 
 ```bash
 root@Rav3nCLaW [05:49:49 PM] [~/Documents/htb/bolt] 
@@ -123,11 +123,11 @@ sign-up                 [Status: 200, Size: 11038, Words: 3053, Lines: 199]
 
 A download directory make us to download an image.tar. Download it and got  many directory.
 
-![Untitled](/assets/lib/img/bolt//Untitled%201.png)
+![Untitled](/assets/img/bolt//Untitled%201.png)
 
 Enumeration of demo vhost. A register form that different from the passbolt.bolt.htb/register. Form of the demo vhost need an invitation code.
 
-![Untitled](/assets/lib/img/bolt//Untitled%202.png)
+![Untitled](/assets/img/bolt//Untitled%202.png)
 
 Fuzz result of mail.bolt.htb
 
@@ -221,9 +221,9 @@ root@Rav3nCLaW [10:58:38 AM] [~/Documents/htb/bolt]
 1 password hash cracked, 0 left
 ```
 
-![Untitled](/assets/lib/img/bolt//Untitled%203.png)
+![Untitled](/assets/img/bolt//Untitled%203.png)
 
-![Untitled](/assets/lib/img/bolt//Untitled%204.png)
+![Untitled](/assets/img/bolt//Untitled%204.png)
 
 There is a chat where it says that the demo is restricted to invite only so its mean that demo have the invite code and other register page do not have it. Since sarah says that docker image need to be scrubbed then it must have somthing inside it.
 
@@ -231,7 +231,7 @@ Found code where the id need is invite code so it must be somewhere inside the d
 
  
 
-![Untitled](/assets/lib/img/bolt//Untitled%205.png)
+![Untitled](/assets/img/bolt//Untitled%205.png)
 
 Explore the grep command to search about the invite_code that i found in the code above.
 
@@ -247,19 +247,19 @@ A - print all the trailing match line
 
 After login as the user that already been created it redirect to the profile page. The page have the function to change the username of the account.
 
-![Untitled](/assets/lib/img/bolt//Untitled%206.png)
+![Untitled](/assets/img/bolt//Untitled%206.png)
 
 Try to put XXS payload but got nothing also the SSTI payload but got nothing changes at the page. Then login into the bolt webmail with the credential that have been created. At the page of the webmail got many email that says the email have Please confirm the email changes.
 
-![Untitled](/assets/lib/img/bolt//Untitled%207.png)
+![Untitled](/assets/img/bolt//Untitled%207.png)
 
 Check inside of the email and see that the username is change to 16.
 
-![Untitled](/assets/lib/img/bolt//Untitled%208.png)
+![Untitled](/assets/img/bolt//Untitled%208.png)
 
 SSTI is the vulnerability.
 
-![Untitled](/assets/lib/img/bolt//Untitled%209.png)
+![Untitled](/assets/img/bolt//Untitled%209.png)
 
 Put the reverse shell in the name input form and and click the link at the email and got the reverse shell.
 
@@ -420,7 +420,7 @@ gpg --decrypt -a --pinentry-mode=loopback --passphrase="merrychristmas" pgp.asc
 
 Command to decrypt the PGP message with the passphrase that we get from the hash.
 
-![Untitled](/assets/lib/img/bolt//Untitled%2010.png)
+![Untitled](/assets/img/bolt//Untitled%2010.png)
 
 Get into the root.
 
