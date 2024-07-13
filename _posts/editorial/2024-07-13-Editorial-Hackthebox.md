@@ -9,12 +9,12 @@ tags: [Gitpython,scripting,SSRF]
 
 ![Editorial](/assets/img/editorial/editorial.jpeg)
 
-Editorial is a season 5 machine from week 9. It is an easy box but somehow the enumeration part need to be really careful. The host have two(2) port open and one of it is http port. We found a file upload function where it have a book url input. The url input can be connect to our python web server. However, we can find an internal port from the function. Once we get the foothold, we found .git repo where it leak the user credentials. A python script can be run as sudo with that user. Finally, we can get root with an exploit found in library in python script.
+Editorial is a Season 5 machine from Week 9 on HackTheBox. It is considered an easy box, but the enumeration phase requires careful attention. The host has two open ports, one of which is an HTTP port. We discovered a file upload function with a book URL input that connects to our Python web server. This function allows us to identify an internal port. After gaining initial access, we found a .git repository containing user credentials. A Python script can be executed with sudo permissions by that user, leading to root access via an exploit found in the Python script's library.
 
 
 ## **Recon**
 
-We launch NMAP Scan.
+We start with an NMAP scan.
 
 ```bash
 PORT   STATE SERVICE REASON  VERSION
@@ -32,19 +32,19 @@ PORT   STATE SERVICE REASON  VERSION
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
 
-From the web application, theres an upload file function. The yellow highlighted in below image is the injection point where we can access the internal port.
+From the web application, we find a file upload function. The highlighted part in the image below is the injection point where we can access the internal port.
 
 ![alt text](/assets/img/editorial/image-1.png)
 
-Below screenshot shows that the URL will try to connect our python web server once we supply the URL input. The screenshow below is my local IP.
+The URL input connects to our Python web server once supplied, as shown in the screenshot below of my local IP.
 
 ![alt text](/assets/img/editorial/image-2.png)
 
-Moving on, I try numerous type of file to upload it to the server. However, the application does not have access to see the uploaded file. We can try to use the localhost IP address and see the response with burpsuite. It shows that an image has been response from the localhost URL. We can enumerate the internal port from here.
+I tried various file types to upload to the server. However, the application does not allow access to the uploaded files. Using Burp Suite, we can see that an image is returned from the localhost URL, allowing us to enumerate the internal ports.
 
 ![alt text](/assets/img/editorial/image-4.png)
 
-We can enumerate it with the script below. The script below will enumerate each of the port number and provide the response of each port.
+Craft a script to make it easier to enumerate each port and the response.
 
 ```python
 import requests
@@ -90,31 +90,31 @@ The result show that the response of the port 5000 is different from the other p
 
 ![alt text](/assets/img/editorial/image-7.png)
 
-We can browse thru the new endpoint with burp.
+We explore the new endpoint using Burp Suite.
 
 ![alt text](/assets/img/editorial/image-8.png)
 
-From the above image, we can browse to each of the endpoint that we've found. We can browse it thru the input injection point to get the content of the file. Below is the content of **"/api/latest/metadata/messages/authors"** endpoint. The content reveal a credentials.
+The content of "/api/latest/metadata/messages/authors" endpoint reveals credentials.
 
 ![alt text](/assets/img/editorial/image-9.png)
 
-We can ssh into the server with the credentials provide from the previous image.
+Using the credentials, we SSH into the server.
 
 ![alt text](/assets/img/editorial/image-10.png)
 
 ## dev Shell
 
-In dev home directory, we can find .git repo in /apps directory. From there, we can see the git log for the repo.
+In the dev home directory, we find a .git repo in the /apps directory. We view the git log for the repo.
 
 ![alt text](/assets/img/editorial/image-11.png)
 
-We can see the content of the git log we found with **"git show"** command.
+Using the "git show" command, we see the content of the git log.
 
 ![alt text](/assets/img/editorial/image-12.png)
 
 ## prod shell
 
-Run sudo -l to check whether our current user can run any file as root.
+Running sudo -l shows that our current user can run a Python script as root.
 
 ![alt text](/assets/img/editorial/image-15.png)
 
@@ -135,15 +135,15 @@ r = Repo.init('', bare=True)
 r.clone_from(url_to_clone, 'new_changes', multi_options=["-c protocol.ext.allow=always"])
 ```
 
-We can see that the function of this script is to clone a git repo into the "/opt/internal_apps/clone_changes". After several time of research and try to find the exploitation path. The git library have a rce vulnerability [gitPython](https://security.snyk.io/vuln/SNYK-PYTHON-GITPYTHON-3113858). We can view the git version with **pip list** command to look for the installed library.
+We discover an RCE vulnerability in the git library [gitPython](https://security.snyk.io/vuln/SNYK-PYTHON-GITPYTHON-3113858). Checking the git version with **pip list** reveals the installed library.
 
 ![alt text](/assets/img/editorial/image-16.png)
 
-In order to exploit it, we can use this vulnerability that we've found and craft a malicious code. Below is how i exploit the 
+Exploiting this vulnerability, we craft a malicious command to grant /bin/bash file SUID permission.
 
 ![alt text](/assets/img/editorial/image-14.png)
 
-Below are the command that can be used to grant **/bin/bash** file SUID permission.
+The command used:
 
 ```bash
 
